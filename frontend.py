@@ -6,6 +6,7 @@ import urllib.request
 from io import BytesIO
 from dotenv import load_dotenv
 import os
+import re
 
 # Load environment variables from .env file
 load_dotenv()
@@ -14,7 +15,7 @@ class WeatherApp:
     def __init__(self, root):
         self.root = root
         self.root.title("Weather Dashboard")
-        self.root.geometry("400x550")
+        self.root.geometry("600x600")  # Increased height for extra line
         self.root.configure(bg="#f0f0f0")
 
         # City input
@@ -22,8 +23,8 @@ class WeatherApp:
         self.label.pack(pady=10)
         self.city_entry = tk.Entry(root, font=("Arial", 12), width=20)
         self.city_entry.pack(pady=5)
-        # Bind Enter key to fetch_weather
         self.city_entry.bind("<Return>", lambda event: self.fetch_weather())
+        self.city_entry.focus_set()
 
         # Submit button
         self.submit_btn = tk.Button(
@@ -33,12 +34,13 @@ class WeatherApp:
         self.submit_btn.pack(pady=5)
 
         # Weather display
-        self.result_label = tk.Label(root, text="", bg="#f0f0f0", font=("Arial", 12), wraplength=350)
+        self.result_label = tk.Label(root, text="", bg="#f0f0f0", font=("Arial", 12), wraplength=550)
         self.result_label.pack(pady=10)
 
-        # Weather icon
-        self.icon_label = tk.Label(root, bg="#f0f0f0")
-        self.icon_label.pack(pady=5)
+        # Forecast frame for horizontal layout
+        self.forecast_frame = tk.Frame(root, bg="#f0f0f0")
+        self.forecast_frame.pack(pady=10)
+        self.forecast_labels = []  # Store labels for dynamic updates
 
         # Map display
         self.map_label = tk.Label(root, bg="#f0f0f0")
@@ -51,7 +53,7 @@ class WeatherApp:
             return
 
         try:
-            # --- Call Flask backend API ---
+            # --- Call Flask backend API for current weather ---
             response = requests.post("http://localhost:5000/api/weather", json={"city": city})
             data = response.json()
 
@@ -62,28 +64,63 @@ class WeatherApp:
             # --- Convert Celsius to Fahrenheit ---
             celsius = data['temp']
             fahrenheit = (celsius * 9/5) + 32
+            # Sanitize description to remove any special characters
+            description = re.sub(r'[^\w\s,.]', '', data['description']).capitalize()
 
-            # --- Display weather info ---
+            # --- Display current weather ---
             result = (
                 f"{data['city']}\n"
-                f"Temperature: {fahrenheit:.1f}°F\n"
+                f"Temperature: {fahrenheit:.1f} F\n"
                 f"Humidity: {data['humidity']}%\n"
-                f"Description: {data['description'].capitalize()}"
+                f"Description: {description}"
             )
             self.result_label.config(text=result)
 
-            # --- Weather icon ---
-            icon_url = f"http://openweathermap.org/img/wn/{data['icon']}@2x.png"
-            with urllib.request.urlopen(icon_url) as u:
-                raw_data = u.read()
-            img = Image.open(BytesIO(raw_data)).resize((50, 50), Image.LANCZOS)
-            photo = ImageTk.PhotoImage(img)
-            self.icon_label.config(image=photo)
-            self.icon_label.image = photo
+            # --- Clear previous forecast labels ---
+            for label in self.forecast_labels:
+                label.destroy()
+            self.forecast_labels.clear()
+
+            # --- Call Flask backend API for 5-day forecast ---
+            forecast_response = requests.post("http://localhost:5000/api/forecast", json={"city": city})
+            print(f"Forecast response: {forecast_response.status_code}, {forecast_response.text}")  # Debug
+            if forecast_response.status_code == 200:
+                forecast_data = forecast_response.json()
+                for i, item in enumerate(forecast_data['forecast']):
+                    min_temp_f = (item['min_temp'] * 9/5) + 32
+                    max_temp_f = (item['max_temp'] * 9/5) + 32
+                    desc = re.sub(r'[^\w\s,.]', '', item['description']).capitalize()
+                    # Include day of the week
+                    forecast_text = f"{item['day']}\n{item['date']}\n{min_temp_f:.1f}-{max_temp_f:.1f} F\n{desc}"
+                    label = tk.Label(
+                        self.forecast_frame,
+                        text=forecast_text,
+                        bg="#ffffff",
+                        font=("Arial", 9),
+                        width=15,
+                        height=5,  # Increased for extra line
+                        relief="raised",
+                        bd=1,
+                        padx=5,
+                        pady=5
+                    )
+                    label.grid(row=0, column=i, padx=5)
+                    self.forecast_labels.append(label)
+            else:
+                error_label = tk.Label(
+                    self.forecast_frame,
+                    text=f"Forecast unavailable: {forecast_response.status_code} {forecast_response.text}",
+                    bg="#f0f0f0",
+                    font=("Arial", 9),
+                    wraplength=550
+                )
+                error_label.grid(row=0, column=0, columnspan=5)
+                self.forecast_labels.append(error_label)
 
             # --- Fetch coordinates from API response ---
             lat = data.get("lat")
             lon = data.get("lon")
+            self.last_lat, self.last_lon = lat, lon
 
             # --- Fetch map image using LocationIQ Static Maps API ---
             if lat and lon:
