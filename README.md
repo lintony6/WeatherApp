@@ -1,5 +1,5 @@
 WeatherApp
-WeatherApp is a desktop application that provides current weather information and a 5-day forecast for any city, displayed in a clean, text-based interface with an interactive map. Built with Python, Tkinter, Flask, and external APIs, it offers a simple yet functional way to check weather conditions.
+WeatherApp is a desktop application that provides current weather information and a 5-day forecast for any city, displayed in a clean, text-based interface with a map. Built with Python, Tkinter, Flask, and external APIs, it offers a simple yet functional way to check weather conditions.
 Features
 
 ![WeatherApp Graphical User Interface](WeatherAppUI.png)  
