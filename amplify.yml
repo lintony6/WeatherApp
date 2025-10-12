@@ -7,8 +7,10 @@ backend:
         - pip install -r requirements.txt
   start:
     commands:
+      # Start your Flask backend with Gunicorn on port 8080
       - cd webApp
       - gunicorn --bind 0.0.0.0:8080 backend:app
+
 frontend:
   phases:
     build:
@@ -19,7 +21,15 @@ frontend:
       - '**/*'
   cache:
     paths: []
+
+# 👇 Rewrites and redirects section (important!)
 rewrites:
-  - source: '/<*>'
-    target: '/index.html'
-    status: '404-200'
+  # Forward all /api requests to your backend service
+  - source: /api/<*>
+    target: http://localhost:8080/api/<*>
+    status: 200
+
+  # Default SPA rewrite for React/Vue/etc
+  - source: /<*>
+    target: /index.html
+    status: 200
