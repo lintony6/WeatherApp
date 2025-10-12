@@ -11,7 +11,7 @@ It uses the OpenWeatherMap and LocationIQ APIs to display real-time weather data
 A Python-based application with a Tkinter GUI and Flask backend.  
 
 **Web App:**  
-A browser-based version built with HTML, CSS, and JavaScript, using a Flask backend deployed to AWS Lambda (via Zappa) and hosted with AWS Amplify.
+A browser-based version built with HTML, CSS, and JavaScript, using a Flask backend deployed to AWS Lambda (via Zappa) and hosted with AWS Amplify.  
 Link: https://main.d2itnc7lavde7x.amplifyapp.com/
 ---
 
