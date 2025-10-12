@@ -1,0 +1,27 @@
+version: 1
+backend:
+  phases:
+    build:
+      commands:
+        - '# Go into the webApp folder'
+        - cd webApp
+        - '# Install the Python packages'
+        - pip install -r requirements.txt
+frontend:
+  phases:
+    preBuild:
+      commands: []
+    build:
+      commands: []
+  artifacts:
+    # Tell Amplify that the website files are in the webApp folder
+    baseDirectory: webApp
+    files:
+      - '**/*'
+  cache:
+    paths: []
+rewrites:
+  - source: '/api/<*>'
+    # Tell Amplify to send API requests to the backend.py file
+    target: '/backend.py'
+    status: '200'
