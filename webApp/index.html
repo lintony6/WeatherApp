@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather Dashboard</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <main class="container">
+        <h1>Weather Dashboard</h1>
+
+        <div class="input-container">
+            <label for="city-input">Enter City:</label>
+            <div class="autocomplete-wrapper">
+                <input type="text" id="city-input" placeholder="e.g., New York" autocomplete="off">
+                <div id="autocomplete-list" class="autocomplete-items"></div>
+            </div>
+            <button id="submit-btn">Get Weather</button>
+        </div>
+
+        <div id="error-message" class="error"></div>
+
+        <section id="results-container" class="hidden">
+            <div id="current-weather" class="card"></div>
+            <h3>5-Day Forecast</h3>
+            <div id="forecast-container"></div>
+            <div id="map-container">
+                <img id="weather-map" alt="Map of the selected location">
+            </div>
+        </section>
+
+    </main>
+    <script src="script.js"></script>
+</body>
+</html>
