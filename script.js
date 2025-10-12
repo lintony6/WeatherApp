@@ -1,5 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const BACKEND_URL = "https://llze2bvob8.execute-api.us-east-1.amazonaws.com/dev";
+    // ✅ Updated to the new live backend URL
+    const BACKEND_URL = "https://n1zpcn6yw3.execute-api.us-east-1.amazonaws.com/dev";
 
     // --- Select HTML elements ---
     const cityInput = document.getElementById('city-input');
