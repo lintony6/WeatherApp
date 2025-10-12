@@ -9,9 +9,11 @@ It uses the OpenWeatherMap and LocationIQ APIs to display real-time weather data
 
 **Desktop App:**  
 A Python-based application with a Tkinter GUI and Flask backend.  
+![WeatherApp Graphical User Interface](WeatherAppDesktopUI.png)
 
 **Web App:**  
 A browser-based version built with HTML, CSS, and JavaScript, using a Flask backend deployed to AWS Lambda (via Zappa) and hosted with AWS Amplify.  
+![WeatherApp Graphical User Interface](WeatherAppWebUI.png)  
 Link: https://main.d2itnc7lavde7x.amplifyapp.com/
 ---
 
