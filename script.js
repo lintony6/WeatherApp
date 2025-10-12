@@ -1,5 +1,4 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // --- Base URL for your live backend (AWS Lambda + API Gateway) ---
     const BACKEND_URL = "https://llze2bvob8.execute-api.us-east-1.amazonaws.com/dev";
 
     // --- Select HTML elements ---
@@ -11,24 +10,34 @@ document.addEventListener('DOMContentLoaded', () => {
     const currentWeatherDiv = document.getElementById('current-weather');
     const forecastContainer = document.getElementById('forecast-container');
     const weatherMapImg = document.getElementById('weather-map');
+    const unitToggle = document.getElementById('unit-toggle');
+    const unitLabel = document.getElementById('unit-label');
 
-    // --- Autocomplete state ---
+    // --- State ---
     let debounceTimer;
     let suggestionCache = {};
     let activeSuggestionIndex = -1;
+    let useFahrenheit = false;
+    let currentWeatherData = null;
+    let forecastData = null;
 
     // --- Event Listeners ---
     submitBtn.addEventListener('click', fetchWeather);
     cityInput.addEventListener('keydown', (e) => {
         if (e.key === 'Enter') {
-            if (autocompleteList.childElementCount > 0 && activeSuggestionIndex > -1) {
-                return;
-            }
+            if (autocompleteList.childElementCount > 0 && activeSuggestionIndex > -1) return;
             fetchWeather();
         }
     });
 
-    // --- Autocomplete Logic ---
+    unitToggle.addEventListener('change', () => {
+        useFahrenheit = unitToggle.checked;
+        unitLabel.textContent = useFahrenheit ? "°F" : "°C";
+        if (currentWeatherData) displayCurrentWeather(currentWeatherData);
+        if (forecastData) displayForecast(forecastData.forecast);
+    });
+
+    // --- Autocomplete ---
     cityInput.addEventListener('input', () => {
         const query = cityInput.value.trim();
         clearTimeout(debounceTimer);
@@ -129,6 +138,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const weatherData = await weatherResponse.json();
             if (!weatherResponse.ok) throw new Error(weatherData.error || 'Unknown weather error');
+            currentWeatherData = weatherData;
             displayCurrentWeather(weatherData);
 
             const forecastResponse = await fetch(`${BACKEND_URL}/api/forecast`, {
@@ -138,7 +148,7 @@ document.addEventListener('DOMContentLoaded', () => {
             });
 
             if (forecastResponse.ok) {
-                const forecastData = await forecastResponse.json();
+                forecastData = await forecastResponse.json();
                 displayForecast(forecastData.forecast);
             } else {
                 throw new Error('Forecast unavailable');
@@ -151,29 +161,57 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    // --- Display Current Weather ---
     function displayCurrentWeather(data) {
-        const fahrenheit = (data.temp * 9/5) + 32;
+        if (!data) return;
+        const tempC = data.temp;
+        const feelsLikeC = data.feels_like ?? data.temp;
+        const humidity = data.humidity;
+        const pressure = data.pressure;
+        const windSpeedMs = data.wind_speed;
         const description = data.description.replace(/[^\w\s,.]/g, '').replace(/^\w/, c => c.toUpperCase());
+        const sunrise = data.sunrise ? new Date(data.sunrise * 1000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '--';
+        const sunset = data.sunset ? new Date(data.sunset * 1000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '--';
+
+        const temp = useFahrenheit ? (tempC * 9/5) + 32 : tempC;
+        const feelsLike = useFahrenheit ? (feelsLikeC * 9/5) + 32 : feelsLikeC;
+        const windSpeed = useFahrenheit ? (windSpeedMs * 2.237).toFixed(1) : windSpeedMs.toFixed(1);
+
+        const tempUnit = useFahrenheit ? '°F' : '°C';
+        const windUnit = useFahrenheit ? 'mph' : 'm/s';
+
         currentWeatherDiv.innerHTML = `
             <h2>${data.city}</h2>
-            <p><strong>Temperature:</strong> ${fahrenheit.toFixed(1)} °F</p>
-            <p><strong>Humidity:</strong> ${data.humidity}%</p>
-            <p><strong>Description:</strong> ${description}</p>
+            <p><strong>${description}</strong></p>
+            <p><strong>Temperature:</strong> ${temp.toFixed(1)} ${tempUnit}</p>
+            <p><strong>Feels Like:</strong> ${feelsLike.toFixed(1)} ${tempUnit}</p>
+            <p><strong>Humidity:</strong> ${humidity}%</p>
+            <p><strong>Pressure:</strong> ${pressure} hPa</p>
+            <p><strong>Wind:</strong> ${windSpeed} ${windUnit}</p>
+            <p><strong>Sunrise:</strong> ${sunrise}</p>
+            <p><strong>Sunset:</strong> ${sunset}</p>
         `;
     }
 
+    // --- Display Forecast ---
     function displayForecast(forecast) {
+        if (!forecast) return;
         forecastContainer.innerHTML = '';
         forecast.forEach(item => {
-            const minTempF = (item.min_temp * 9/5) + 32;
-            const maxTempF = (item.max_temp * 9/5) + 32;
+            const minC = item.min_temp;
+            const maxC = item.max_temp;
             const desc = item.description.replace(/[^\w\s,.]/g, '').replace(/^\w/, c => c.toUpperCase());
+
+            const minTemp = useFahrenheit ? (minC * 9/5) + 32 : minC;
+            const maxTemp = useFahrenheit ? (maxC * 9/5) + 32 : maxC;
+            const unit = useFahrenheit ? '°F' : '°C';
+
             const card = document.createElement('div');
             card.className = 'card forecast-card';
             card.innerHTML = `
                 <strong>${item.day}</strong><br>
                 <small>${item.date}</small><br>
-                ${minTempF.toFixed(1)}–${maxTempF.toFixed(1)} °F<br>
+                ${minTemp.toFixed(1)}–${maxTemp.toFixed(1)} ${unit}<br>
                 ${desc}
             `;
             forecastContainer.appendChild(card);
@@ -189,6 +227,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    // --- Helpers ---
     function showError(message) {
         errorMessageDiv.textContent = message;
         resultsContainer.classList.add('hidden');
