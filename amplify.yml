@@ -7,14 +7,15 @@ backend:
         - cd webApp
         - '# Install the Python packages'
         - pip install -r requirements.txt
+    start:
+      commands:
+        - '# Start the Gunicorn server'
+        - gunicorn --bind 0.0.0.0:8080 backend:app
 frontend:
   phases:
-    preBuild:
-      commands: []
     build:
       commands: []
   artifacts:
-    # Tell Amplify that the website files are in the webApp folder
     baseDirectory: webApp
     files:
       - '**/*'
@@ -22,6 +23,6 @@ frontend:
     paths: []
 rewrites:
   - source: '/api/<*>'
-    # Tell Amplify to send API requests to the backend.py file
-    target: '/backend.py'
+    # Proxy API requests to the running Gunicorn server
+    target: 'http://localhost:8080/api/<*>'
     status: '200'
