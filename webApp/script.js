@@ -1,5 +1,8 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // Select all the necessary HTML elements from the page
+    // --- Base URL for your live backend (AWS Lambda + API Gateway) ---
+    const BACKEND_URL = "https://llze2bvob8.execute-api.us-east-1.amazonaws.com/dev";
+
+    // --- Select HTML elements ---
     const cityInput = document.getElementById('city-input');
     const submitBtn = document.getElementById('submit-btn');
     const autocompleteList = document.getElementById('autocomplete-list');
@@ -8,9 +11,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const currentWeatherDiv = document.getElementById('current-weather');
     const forecastContainer = document.getElementById('forecast-container');
     const weatherMapImg = document.getElementById('weather-map');
-    const BACKEND_URL = "https://llze2bvob8.execute-api.us-east-1.amazonaws.com/dev";
 
-    // Variables for managing autocomplete state
+    // --- Autocomplete state ---
     let debounceTimer;
     let suggestionCache = {};
     let activeSuggestionIndex = -1;
@@ -32,9 +34,7 @@ document.addEventListener('DOMContentLoaded', () => {
         clearTimeout(debounceTimer);
         closeAllLists();
         if (query.length < 2) return;
-        debounceTimer = setTimeout(() => {
-            fetchAutocomplete(query);
-        }, 300);
+        debounceTimer = setTimeout(() => fetchAutocomplete(query), 300);
     });
 
     async function fetchAutocomplete(query) {
@@ -42,7 +42,7 @@ document.addEventListener('DOMContentLoaded', () => {
             updateAutocomplete(suggestionCache[query]);
             return;
         }
-        const url = `${BACKEND_URL}/api/autocomplete?q=${query}`;
+        const url = `${BACKEND_URL}/api/autocomplete?q=${encodeURIComponent(query)}`;
         try {
             const response = await fetch(url);
             if (!response.ok) throw new Error('Network response was not ok');
@@ -59,7 +59,7 @@ document.addEventListener('DOMContentLoaded', () => {
         closeAllLists();
         activeSuggestionIndex = -1;
         if (!suggestions.length) return;
-        suggestions.forEach((suggestion) => {
+        suggestions.forEach(suggestion => {
             const item = document.createElement('div');
             item.textContent = suggestion;
             item.addEventListener('click', () => {
@@ -70,17 +70,15 @@ document.addEventListener('DOMContentLoaded', () => {
             autocompleteList.appendChild(item);
         });
     }
-    
+
     cityInput.addEventListener('keydown', (e) => {
-        let items = autocompleteList.getElementsByTagName('div');
+        const items = autocompleteList.getElementsByTagName('div');
         if (items.length === 0) return;
         if (e.key === 'ArrowDown') {
-            activeSuggestionIndex++;
-            if (activeSuggestionIndex >= items.length) activeSuggestionIndex = 0;
+            activeSuggestionIndex = (activeSuggestionIndex + 1) % items.length;
             addActive(items);
         } else if (e.key === 'ArrowUp') {
-            activeSuggestionIndex--;
-            if (activeSuggestionIndex < 0) activeSuggestionIndex = items.length - 1;
+            activeSuggestionIndex = (activeSuggestionIndex - 1 + items.length) % items.length;
             addActive(items);
         } else if (e.key === 'Enter') {
             e.preventDefault();
@@ -101,22 +99,18 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function removeActive(items) {
-        for (let i = 0; i < items.length; i++) {
-            items[i].classList.remove('autocomplete-active');
-        }
+        for (const item of items) item.classList.remove('autocomplete-active');
     }
 
     function closeAllLists() {
         autocompleteList.innerHTML = '';
     }
-    
+
     document.addEventListener('click', (e) => {
-        if (e.target !== cityInput) {
-            closeAllLists();
-        }
+        if (e.target !== cityInput) closeAllLists();
     });
 
-    // --- Weather Fetching and Display Logic ---
+    // --- Weather Fetching ---
     async function fetchWeather() {
         const city = cityInput.value.trim();
         if (!city) {
@@ -128,27 +122,28 @@ document.addEventListener('DOMContentLoaded', () => {
 
         try {
             const weatherResponse = await fetch(`${BACKEND_URL}/api/weather`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ city }),
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ city }),
             });
+
             const weatherData = await weatherResponse.json();
             if (!weatherResponse.ok) throw new Error(weatherData.error || 'Unknown weather error');
             displayCurrentWeather(weatherData);
 
-            // --- THIS LINE IS NOW FIXED ---
             const forecastResponse = await fetch(`${BACKEND_URL}/api/forecast`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ city }),
             });
+
             if (forecastResponse.ok) {
                 const forecastData = await forecastResponse.json();
                 displayForecast(forecastData.forecast);
             } else {
                 throw new Error('Forecast unavailable');
             }
-            
+
             displayMap(weatherData.map_url);
             resultsContainer.classList.remove('hidden');
         } catch (error) {
@@ -198,7 +193,7 @@ document.addEventListener('DOMContentLoaded', () => {
         errorMessageDiv.textContent = message;
         resultsContainer.classList.add('hidden');
     }
-    
+
     function clearResults() {
         errorMessageDiv.textContent = '';
         resultsContainer.classList.add('hidden');
