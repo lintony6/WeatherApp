@@ -8,6 +8,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const currentWeatherDiv = document.getElementById('current-weather');
     const forecastContainer = document.getElementById('forecast-container');
     const weatherMapImg = document.getElementById('weather-map');
+    const BACKEND_URL = "https://llze2bvob8.execute-api.us-east-1.amazonaws.com/dev";
 
     // Variables for managing autocomplete state
     let debounceTimer;
@@ -41,7 +42,7 @@ document.addEventListener('DOMContentLoaded', () => {
             updateAutocomplete(suggestionCache[query]);
             return;
         }
-        const url = `/api/autocomplete?q=${query}`;
+        const url = `${BACKEND_URL}/api/autocomplete?q=${query}`;
         try {
             const response = await fetch(url);
             if (!response.ok) throw new Error('Network response was not ok');
@@ -126,17 +127,17 @@ document.addEventListener('DOMContentLoaded', () => {
         clearResults();
 
         try {
-            const weatherResponse = await fetch('/api/weather', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ city }),
+            const weatherResponse = await fetch(`${BACKEND_URL}/api/weather`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ city }),
             });
             const weatherData = await weatherResponse.json();
             if (!weatherResponse.ok) throw new Error(weatherData.error || 'Unknown weather error');
             displayCurrentWeather(weatherData);
 
             // --- THIS LINE IS NOW FIXED ---
-            const forecastResponse = await fetch('/api/forecast', {
+            const forecastResponse = await fetch(`${BACKEND_URL}/api/forecast`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ city }),
