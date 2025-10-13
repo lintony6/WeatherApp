@@ -12,9 +12,9 @@ A Python-based application with a Tkinter GUI and Flask backend.
 ![WeatherApp Graphical User Interface](WeatherAppDesktopUI.png)
 
 **Web App:**  
-A browser-based version built with HTML, CSS, and JavaScript, using a Flask backend deployed to AWS Lambda (via Zappa) and hosted with AWS Amplify.  
+A browser-based version built with HTML, CSS, and JavaScript, using a Flask backend deployed to AWS Lambda (via Zappa) and hosted with GitHub Pages
 ![WeatherApp Graphical User Interface](WeatherAppWebUI.png)  
-Link: https://main.d2itnc7lavde7x.amplifyapp.com/
+Link: https://lintony6.github.io/WeatherApp/
 ---
 
 ## Features
@@ -42,7 +42,7 @@ Link: https://main.d2itnc7lavde7x.amplifyapp.com/
 ### Web App
 - **Frontend:** HTML, CSS, JavaScript  
 - **Backend:** Flask (Python 3.11), deployed with Zappa on AWS Lambda  
-- **Hosting:** AWS Amplify (static site hosting)  
+- **Hosting:** GitHub Pages (static site hosting)  
 
 ---
 
@@ -116,7 +116,7 @@ LocationIQKey=your_locationiq_key
    ```
    const BACKEND_URL = "https://xxxxx.execute-api.us-east-1.amazonaws.com/dev";
    ```
-6. Push your code to GitHub — Amplify will automatically build and host your site.
+6. Push your code to GitHub 
 
 ---
 
@@ -140,7 +140,6 @@ WeatherApp/
 │   └── zappa_settings.json
 │
 ├── .gitignore
-├── amplify.yml
 └── README.md
 ```
 
