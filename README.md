@@ -12,9 +12,9 @@ A Python-based application with a Tkinter GUI and Flask backend.
 ![WeatherApp Graphical User Interface](WeatherAppDesktopUI.png)
 
 **Web App:**  
-A browser-based version built with HTML, CSS, and JavaScript, using a Flask backend deployed to AWS Lambda (via Zappa) and hosted with GitHub Pages
+A browser-based version built with HTML, CSS, and JavaScript, using a Flask backend deployed to AWS Lambda (via Zappa) and hosted with AWS Amplify.  
 ![WeatherApp Graphical User Interface](WeatherAppWebUI.png)  
-Link: https://lintony6.github.io/WeatherApp/
+Link: https://main.d2itnc7lavde7x.amplifyapp.com/
 ---
 
 ## Features
@@ -42,7 +42,7 @@ Link: https://lintony6.github.io/WeatherApp/
 ### Web App
 - **Frontend:** HTML, CSS, JavaScript  
 - **Backend:** Flask (Python 3.11), deployed with Zappa on AWS Lambda  
-- **Hosting:** GitHub Pages (static site hosting)  
+- **Hosting:** AWS Amplify (static site hosting)  
 
 ---
 
