@@ -1,0 +1,30 @@
+name: Deploy webApp to GitHub Pages
+
+on:
+  push:
+    branches:
+      - main            # deploy whenever you push to main
+    paths:
+      - 'webApp/**'     # only trigger if something in /webApp changes
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write   # allows pushing to the pages branch
+
+    steps:
+      - name: Checkout main branch
+        uses: actions/checkout@v4
+
+      - name: Copy webApp contents to output folder
+        run: |
+          mkdir out
+          cp -r webApp/* out/
+
+      - name: Deploy to pages branch
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./out
+          publish_branch: pages
