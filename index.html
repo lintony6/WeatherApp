@@ -31,14 +31,10 @@
         <div id="error-message" class="error" role="status" aria-live="polite"></div>
 
         <section id="results-container" class="hidden" aria-live="polite">
-            <div id="current-weather" class="card" role="region" aria-label="Current weather">
-                <!-- Populated by JavaScript -->
-            </div>
+            <div id="current-weather" class="card" role="region" aria-label="Current weather"></div>
 
             <h3>5-Day Forecast</h3>
-            <div id="forecast-container" aria-label="Five day forecast">
-                <!-- Populated by JavaScript -->
-            </div>
+            <div id="forecast-container" aria-label="Five day forecast"></div>
 
             <div id="map-container" aria-label="Map of selected location">
                 <img id="weather-map" alt="Map of the selected location">
@@ -46,6 +42,7 @@
         </section>
     </main>
 
-    <script src="script.js"></script>
+    <!-- 👇 add ?v=3 (or bump the number) to break CDN/browser cache -->
+    <script src="script.js?v=3"></script>
 </body>
 </html>
