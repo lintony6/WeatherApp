@@ -6,6 +6,7 @@ on:
       - main            # deploy whenever you push to main
     paths:
       - 'webApp/**'     # only trigger if something in /webApp changes
+  workflow_dispatch:
 
 jobs:
   deploy:
