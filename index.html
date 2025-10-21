@@ -1,48 +1,63 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>Weather Dashboard</title>
-    <link rel="stylesheet" href="style.css" />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Weather Dashboard</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-    <main class="container" role="main">
-        <h1>Weather Dashboard</h1>
+  <main class="container" role="main">
+    <h1>Weather Dashboard</h1>
 
-        <div class="input-container">
-            <label for="city-input">Enter City:</label>
-            <div class="autocomplete-wrapper" aria-haspopup="listbox">
-                <input type="text" id="city-input" placeholder="e.g., New York" autocomplete="off" aria-label="City name"/>
-                <div id="autocomplete-list" class="autocomplete-items" role="listbox" aria-label="City suggestions"></div>
-            </div>
-            <button id="submit-btn" aria-label="Get weather">Get Weather</button>
+    <div class="input-container">
+      <label for="city-input">Enter City:</label>
+      <div class="autocomplete-wrapper" aria-haspopup="listbox">
+        <input
+          type="text"
+          id="city-input"
+          placeholder="e.g., New York"
+          autocomplete="off"
+          aria-label="City name"
+        />
+        <div
+          id="autocomplete-list"
+          class="autocomplete-items"
+          role="listbox"
+          aria-label="City suggestions"
+        ></div>
+      </div>
 
-            <!-- Celsius / Fahrenheit Toggle -->
-            <div class="unit-toggle" aria-hidden="false">
-                <label class="switch" title="Toggle temperature unit">
-                    <input type="checkbox" id="unit-toggle" aria-checked="false" />
-                    <span class="slider" aria-hidden="true"></span>
-                </label>
-                <span id="unit-label" aria-live="polite">°C</span>
-            </div>
-        </div>
+      <button id="submit-btn" aria-label="Get weather">Get Weather</button>
 
-        <div id="error-message" class="error" role="status" aria-live="polite"></div>
+      <!-- Unit Toggle -->
+      <div class="unit-toggle" aria-label="Unit system toggle">
+        <button id="metric-btn" class="unit-btn active">EU</button>
+        <button id="imperial-btn" class="unit-btn">US</button>
+      </div>
+    </div>
 
-        <section id="results-container" class="hidden" aria-live="polite">
-            <div id="current-weather" class="card" role="region" aria-label="Current weather"></div>
+    <div id="error-message" class="error" role="status" aria-live="polite"></div>
 
-            <h3>5-Day Forecast</h3>
-            <div id="forecast-container" aria-label="Five day forecast"></div>
+    <section id="results-container" class="hidden" aria-live="polite">
+      <div id="current-weather" class="card" role="region" aria-label="Current weather"></div>
 
-            <div id="map-container" aria-label="Map of selected location">
-                <img id="weather-map" alt="Map of the selected location">
-            </div>
-        </section>
-    </main>
+      <h3>5-Day Forecast</h3>
+      <div id="forecast-container" aria-label="Five day forecast"></div>
 
-    <!-- 👇 add ?v=3 (or bump the number) to break CDN/browser cache -->
-    <script src="script.js?v=3"></script>
+      <div class="chart-container">
+        <canvas id="tempChart" aria-label="Temperature trends chart"></canvas>
+      </div>
+
+      <!-- Map and overlay -->
+      <div id="map-container" aria-label="Map of selected location">
+        <img id="weather-map" alt="Map of the selected location" />
+        <div id="map-overlay" class="overlay"></div>
+      </div>
+    </section>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="script.js?v=8"></script>
 </body>
 </html>
