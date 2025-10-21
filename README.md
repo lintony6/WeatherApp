@@ -48,16 +48,16 @@ Link: https://lintony6.github.io/WeatherApp/
 
 ## API Keys
 Both versions require:
-- OpenWeatherMap API Key — weather and forecast data  
+- VisualCrossing API Key — weather and forecast data  
 - LocationIQ API Key — static map and autocomplete data  
 
 Get your keys from:
-- https://home.openweathermap.org/api_keys  
+- https://www.visualcrossing.com/weather-api/
 - https://locationiq.com  
 
 Add them to a `.env` file in each app directory:
 ```
-OpenWeatherMapAPIKey=your_openweather_key
+VisualCrossingKey
 LocationIQKey=your_locationiq_key
 ```
 
@@ -146,7 +146,7 @@ WeatherApp/
 ---
 
 ## APIs Used
-- OpenWeatherMap: Current weather & 5-day forecast  
+- VisualCrossing: Current weather & 5-day forecast  
 - LocationIQ: Autocomplete & static map images  
 
 ---
